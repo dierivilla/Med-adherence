@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Medication Form — JASA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1a2e44;--navy2:#243d58;--teal:#0f7b6c;--teal2:#0d9e8a;--light:#f4f7fa;--border:#dde3ea;--text:#1a2e44;--muted:#6b7e93;--white:#fff;--red:#e53935;--radius:10px;--shadow:0 2px 16px rgba(26,46,68,.10)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--light);color:var(--text);min-height:100vh}
+.app-header{background:var(--navy);color:#fff;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:center;gap:14px}
+.logo-box{width:36px;height:36px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:13px;color:#fff;font-weight:500;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:600;letter-spacing:.01em}
+.hdr-sub{font-size:11px;opacity:.5;margin-top:1px}
+.hipaa-badge{background:rgba(15,123,108,.22);border:1px solid rgba(15,123,108,.45);color:#7de0d0;font-size:11px;font-weight:600;padding:4px 11px;border-radius:20px;letter-spacing:.04em}
+main{max-width:980px;margin:0 auto;padding:28px 16px 48px}
+.section-card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:20px;box-shadow:var(--shadow);overflow:hidden}
+.section-head{background:var(--navy2);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px}
+.section-head .icon{font-size:16px}
+.section-head h2{font-size:13px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.section-head .badge-count{background:rgba(255,255,255,.15);font-size:11px;padding:2px 9px;border-radius:10px;margin-left:auto}
+.section-body{padding:20px}
+.hipaa-notice{background:#f0faf8;border:1.5px solid var(--teal);border-radius:8px;padding:12px 16px;display:flex;gap:10px;align-items:flex-start;margin-bottom:20px}
+.hipaa-notice .hi{font-size:20px;flex-shrink:0}
+.hipaa-notice p{font-size:12px;color:#0a5c51;line-height:1.6}
+.hipaa-notice strong{font-size:13px;display:block;margin-bottom:3px}
+.api-row{display:flex;gap:10px}
+.api-row input{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border .18s;background:#fafcfe}
+.api-row input:focus{border-color:var(--teal)}
+.key-status{font-size:12px;margin-top:8px;color:var(--muted);min-height:18px}
+.drop-zone{border:2px dashed var(--border);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .18s;position:relative;background:#fafcfe}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--teal);background:#f0faf8}
+.drop-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:30px;margin-bottom:8px}
+.drop-zone p{font-size:13px;color:var(--muted)}
+.drop-zone strong{color:var(--teal)}
+.file-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.file-chip{background:#e8f5f3;color:var(--teal);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
+.file-chip button{background:none;border:none;cursor:pointer;color:#999;font-size:14px;line-height:1;padding:0}
+.extract-row{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.status-msg{font-size:13px;color:var(--muted)}
+.btn{padding:10px 22px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;display:inline-flex;align-items:center;gap:7px}
+.btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:var(--teal2)}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover{background:var(--navy2)}
+.btn-outline{background:#fff;color:var(--teal);border:1.5px solid var(--teal)}.btn-outline:hover{background:#f0faf8}
+.btn-amber{background:#e87225;color:#fff}.btn-amber:hover{background:#d4651a}
+.btn-sm{padding:7px 15px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.spinner{width:14px;height:14px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--navy);color:#fff;padding:10px;text-align:left;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+thead th.center{text-align:center}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr.prn-row{background:#fffbf0}
+tbody tr.flagged td{background:#fff8e6}
+td{padding:4px 5px;vertical-align:middle}
+td.center{text-align:center}
+.cell-input{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);padding:5px 6px;border-radius:5px;outline:none;transition:background .15s,box-shadow .15s;min-width:0}
+.cell-input:focus{background:#f0faf8;box-shadow:0 0 0 2px var(--teal)}
+.cell-input.name-input{font-weight:600}
+.prn-badge{background:#e87225;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:4px;vertical-align:middle;white-space:nowrap;display:inline-block}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal);cursor:pointer}
+.del-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:18px;padding:2px 5px;transition:color .15s;line-height:1}
+.del-btn:hover{color:var(--red)}
+.tbl-actions{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:8px;flex-wrap:wrap}
+.tbl-actions-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+#reviewPanel{display:none;margin-top:20px;border:2px solid #e8a020;border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 16px rgba(232,162,32,.15)}
+.review-head{background:#e87225;color:#fff;padding:14px 20px;display:flex;align-items:center;gap:10px}
+.review-head h3{font-size:14px;font-weight:700;flex:1}
+.review-body{padding:16px 20px;background:#fffdf8}
+.review-clean{display:flex;align-items:center;gap:10px;padding:14px 18px;background:#f0faf8;border-radius:8px;border:1.5px solid var(--teal);color:var(--teal);font-weight:600;font-size:14px}
+.suggestion-item{background:#fff;border:1.5px solid #f0d080;border-radius:8px;padding:14px 16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.suggestion-item:last-child{margin-bottom:0}
+.sug-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.sug-content{flex:1}
+.sug-field{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.sug-diff{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.sug-old{background:#fde8e8;color:#a00;padding:3px 10px;border-radius:5px;font-size:13px;font-weight:500;text-decoration:line-through}
+.sug-arrow{color:var(--muted);font-size:14px}
+.sug-new{background:#e6f9f2;color:#0a6640;padding:3px 10px;border-radius:5px;font-size:13px;font-weight:600}
+.sug-reason{font-size:12px;color:var(--muted);line-height:1.5}
+.sug-actions{display:flex;gap:8px;margin-top:10px}
+.review-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #f0d080}
+@media print{
+  @page{size:279mm 215mm;margin:0}
+  .app-header,.section-card:not(#table-card),#reviewPanel,.tbl-actions,.no-print,.hipaa-notice{display:none!important}
+  #table-card{border:none!important;box-shadow:none!important;padding:0!important;margin:0!important}
+  body{background:#fff}
+  main{padding:0!important;max-width:100%!important}
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <div class="logo-box">Rx</div>
+    <div>
+      <div class="hdr-title">Medication Form</div>
+      <div class="hdr-sub">JASA</div>
+    </div>
+  </div>
+  <div class="hipaa-badge">⚕ HIPAA-SAFE</div>
+</header>
+
+<main>
+
+<div class="hipaa-notice no-print">
+  <div class="hi">🔒</div>
+  <p><strong>HIPAA-Safe by Design</strong>
+  This tool processes medication data only. Do not enter patient names, dates of birth, MRNs, or any other identifying information. Uploaded documents are sent directly to the AI and are never stored on any server. No data is retained after you close this tab.</p>
+</div>
+
+<div class="section-card no-print">
+  <div class="section-head"><span class="icon">🔑</span><h2>API Key</h2></div>
+  <div class="section-body">
+    <div class="api-row">
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-…" autocomplete="off" onkeydown="if(event.key==='Enter')saveKey()">
+      <button class="btn btn-teal btn-sm" onclick="saveKey()">Save Key</button>
+    </div>
+    <div class="key-status" id="keyStatus">Enter your Anthropic API key to enable AI features. The key is never stored or transmitted beyond this session.</div>
+  </div>
+</div>
+
+<div class="section-card no-print">
+  <div class="section-head"><span class="icon">📂</span><h2>Upload Documents (Optional)</h2></div>
+  <div class="section-body">
+    <div class="drop-zone" id="dropZone" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
+      <input type="file" id="fileInput" multiple accept="image/*,.pdf" onchange="addFiles(this.files)">
+      <div class="drop-icon">📎</div>
+      <p><strong>Click to upload</strong> or drag & drop</p>
+      <p style="font-size:12px;margin-top:3px">Images (JPG, PNG) or PDFs — do not upload documents containing patient identifiers.</p>
+    </div>
+    <div class="file-list" id="fileList"></div>
+    <div class="extract-row">
+      <button class="btn btn-navy" id="extractBtn" onclick="extract()" disabled>
+        <span class="spinner" id="extSpinner"></span>
+        <span id="extText">Extract Medications with AI</span>
+      </button>
+      <span class="status-msg" id="statusMsg"></span>
+    </div>
+  </div>
+</div>
+
+<div class="section-card" id="table-card">
+  <div class="section-head">
+    <span class="icon">💊</span>
+    <h2>Medications</h2>
+    <span class="badge-count" id="medCount">0 medications</span>
+  </div>
+  <div class="section-body">
+    <div class="tbl-wrap">
+      <table id="medTable">
+        <thead>
+          <tr>
+            <th style="min-width:160px">Medication</th>
+            <th style="min-width:85px">Dose</th>
+            <th style="min-width:120px">Frequency</th>
+            <th style="min-width:70px">Route</th>
+            <th class="center" style="width:46px">AM</th>
+            <th class="center" style="width:46px">Noon</th>
+            <th class="center" style="width:46px">PM</th>
+            <th class="center" style="width:60px">Bedtime</th>
+            <th style="min-width:150px">Notes</th>
+            <th class="no-print" style="width:36px"></th>
+          </tr>
+        </thead>
+        <tbody id="medBody"></tbody>
+      </table>
+    </div>
+    <div class="tbl-actions">
+      <button class="btn btn-outline btn-sm no-print" onclick="addRow()">+ Add Medication</button>
+      <div class="tbl-actions-right">
+        <button class="btn btn-amber btn-sm no-print" id="reviewBtn" onclick="runReview()">
+          <span class="spinner" id="revSpinner"></span>
+          <span id="revText">🔍 Review with AI</span>
+        </button>
+        <button class="btn btn-navy btn-sm no-print" onclick="printLandscape()">🖨 Print / Save PDF</button>
+      </div>
+    </div>
+
+    <div id="reviewPanel">
+      <div class="review-head">
+        <span style="font-size:20px">🔍</span>
+        <h3>AI Review Results</h3>
+        <button class="btn btn-sm no-print" style="background:rgba(255,255,255,.2);color:#fff;margin-left:auto" onclick="closeReview()">✕ Close</button>
+      </div>
+      <div class="review-body">
+        <div id="reviewContent"></div>
+        <div class="review-footer no-print" id="reviewFooter" style="display:none">
+          <button class="btn btn-outline btn-sm" onclick="closeReview()">Dismiss</button>
+          <button class="btn btn-teal btn-sm" onclick="acceptAll()">✓ Accept All Suggestions</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+let files=[], savedKey='', rowCount=0, suggestions=[];
+
+const SYSTEM_PROMPT=`You are a clinical pharmacist assistant. Your ONLY job is to process medication data. You must NEVER record, repeat, store, or reference any patient identifiers including names, dates of birth, MRN numbers, addresses, or any PHI. If a document contains patient information, ignore it completely and extract only medication-related data. Always return only valid JSON as instructed.`;
+
+// ── KEY ──
+function saveKey(){
+  const v=document.getElementById('apiKey').value.trim();
+  if(!v){setKeyStatus('Please enter a valid API key.','error');return;}
+  if(!v.startsWith('sk-ant-')){setKeyStatus('Key should start with sk-ant- — please check and try again.','error');return;}
+  savedKey=v;
+  setKeyStatus('✓ Key saved for this session. It will be cleared when you close this tab.','ok');
+  updateExtractBtn();
+}
+function setKeyStatus(msg,type){
+  const el=document.getElementById('keyStatus');
+  el.textContent=msg;
+  el.style.color=type==='ok'?'var(--teal)':type==='error'?'var(--red)':'var(--muted)';
+}
+
+// ── UPLOAD ──
+function onDrag(e,on){e.preventDefault();document.getElementById('dropZone').classList.toggle('drag',on);}
+function onDrop(e){e.preventDefault();onDrag(e,false);addFiles(e.dataTransfer.files);}
+function addFiles(fl){
+  for(const f of fl) if(!files.find(x=>x.name===f.name&&x.size===f.size)) files.push(f);
+  renderFiles();
+}
+function removeFile(i){files.splice(i,1);renderFiles();}
+function renderFiles(){
+  document.getElementById('fileList').innerHTML=files.map((f,i)=>`
+    <div class="file-chip">${f.type.includes('pdf')?'📄':'🖼'} ${f.name}
+      <button onclick="removeFile(${i})">×</button></div>`).join('');
+  updateExtractBtn();
+}
+function updateExtractBtn(){
+  document.getElementById('extractBtn').disabled=!(files.length>0&&savedKey);
+}
+
+// ── HELPERS ──
+function cap(s){
+  if(!s)return'';
+  return s.split(' ').map(w=>w?w.charAt(0).toUpperCase()+w.slice(1):'').join(' ');
+}
+function isPRN(freq){return/(prn|as needed|as required|when needed)/i.test(freq||'');}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+async function toB64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>res(r.result.split(',')[1]);
+    r.onerror=()=>rej(new Error('Failed to read: '+file.name));
+    r.readAsDataURL(file);
+  });
+}
+function getKey(){return savedKey||document.getElementById('apiKey').value.trim();}
+
+// ── API ──
+async function callAPI(contentBlocks,maxTokens,hasPDF){
+  const key=getKey();
+  if(!key) throw new Error('No API key set. Please enter your key above.');
+  const headers={
+    'Content-Type':'application/json',
+    'x-api-key':key,
+    'anthropic-version':'2023-06-01',
+    'anthropic-dangerous-direct-browser-access':'true'
+  };
+  if(hasPDF) headers['anthropic-beta']='pdfs-2024-09-25';
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers,
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:maxTokens,system:SYSTEM_PROMPT,messages:[{role:'user',content:contentBlocks}]})
+  });
+  if(!res.ok){
+    const err=await res.json().catch(()=>({}));
+    if(res.status===401) throw new Error('Invalid API key. Please check your key and try again.');
+    if(res.status===403) throw new Error('API key does not have permission. Please check your Anthropic account.');
+    throw new Error(err?.error?.message||`API error ${res.status}`);
+  }
+  return res.json();
+}
+
+// ── EXTRACT ──
+async function extract(){
+  const key=getKey();
+  if(!key||!files.length)return;
+  setBusy('ext',true);
+  document.getElementById('statusMsg').textContent='';
+  try{
+    const blocks=[];
+    let hasPDF=false;
+    for(const f of files){
+      const b64=await toB64(f);
+      if(f.type==='application/pdf'){hasPDF=true;blocks.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}});}
+      else blocks.push({type:'image',source:{type:'base64',media_type:f.type,data:b64}});
+    }
+    blocks.push({type:'text',text:`Extract ALL medications. Ignore any patient identifiers. Return ONLY a valid JSON array, no markdown, no backticks. Each object: name (capitalize each word), dose, frequency, route, morning (bool), noon (bool), evening (bool), bedtime (bool), notes. If timing unspecified or PRN, set all time booleans to false.`});
+    const data=await callAPI(blocks,4000,hasPDF);
+    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const meds=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    appendMeds(meds);
+    setBusy('ext',false);
+    document.getElementById('statusMsg').textContent='✓ '+meds.length+' medication'+(meds.length!==1?'s':'')+' extracted.';
+  }catch(e){setBusy('ext',false);alert('Extraction error:\n'+e.message);}
+}
+
+// ── TABLE ──
+function appendMeds(meds){
+  const reg=meds.filter(m=>!isPRN(m.frequency));
+  const prn=meds.filter(m=>isPRN(m.frequency));
+  [...reg,...prn].forEach(m=>addRow(m));
+}
+
+function addRow(m){
+  const prn=m&&isPRN(m.frequency);
+  const tr=document.createElement('tr');
+  tr.dataset.id=rowCount++;
+  if(prn)tr.className='prn-row';
+  const nameTd=document.createElement('td');
+  const nameWrap=document.createElement('div');
+  nameWrap.style.cssText='display:flex;align-items:center;gap:4px';
+  const nameInput=document.createElement('input');
+  nameInput.type='text';nameInput.className='cell-input name-input';
+  nameInput.value=m?cap(m.name):'';nameInput.placeholder='Medication name';
+  nameInput.setAttribute('autocomplete','off');
+  nameInput.addEventListener('blur',function(){this.value=cap(this.value);});
+  nameWrap.appendChild(nameInput);
+  if(prn){const badge=document.createElement('span');badge.className='prn-badge';badge.textContent='PRN';nameWrap.appendChild(badge);}
+  nameTd.appendChild(nameWrap);tr.appendChild(nameTd);
+  tr.appendChild(makeInputTd(m?m.dose||'':'','dose, e.g. 40mg'));
+  const freqTd=makeInputTd(m?m.frequency||'':'','e.g. once daily, PRN');
+  freqTd.querySelector('input').addEventListener('change',()=>updatePRN(tr));
+  tr.appendChild(freqTd);
+  tr.appendChild(makeInputTd(m?m.route||'':'','oral / IV / topical'));
+  ['morning','noon','evening','bedtime'].forEach(t=>{
+    const td=document.createElement('td');td.className='center';
+    const cb=document.createElement('input');cb.type='checkbox';
+    if(m&&m[t])cb.checked=true;td.appendChild(cb);tr.appendChild(td);
+  });
+  tr.appendChild(makeInputTd(m?m.notes||'':'','special instructions'));
+  const delTd=document.createElement('td');delTd.className='center no-print';
+  delTd.innerHTML='<button class="del-btn" title="Remove">×</button>';
+  delTd.querySelector('button').addEventListener('click',()=>{tr.remove();updateCount();});
+  tr.appendChild(delTd);
+  document.getElementById('medBody').appendChild(tr);
+  updateCount();
+  if(!m)nameInput.focus();
+}
+
+function makeInputTd(val,placeholder){
+  const td=document.createElement('td');
+  const inp=document.createElement('input');
+  inp.type='text';inp.className='cell-input';inp.value=val;
+  inp.placeholder=placeholder||'';inp.setAttribute('autocomplete','off');
+  td.appendChild(inp);return td;
+}
+
+function updatePRN(tr){
+  const freq=tr.cells[2].querySelector('input').value;
+  const prn=isPRN(freq);
+  const nameWrap=tr.cells[0].querySelector('div');
+  let badge=nameWrap.querySelector('.prn-badge');
+  if(prn&&!badge){badge=document.createElement('span');badge.className='prn-badge';badge.textContent='PRN';nameWrap.appendChild(badge);}
+  else if(!prn&&badge)badge.remove();
+  tr.className=prn?'prn-row':'';
+  const body=document.getElementById('medBody');
+  const rows=[...body.rows];
+  [...rows.filter(r=>r.className!=='prn-row'),...rows.filter(r=>r.className==='prn-row')].forEach(r=>body.appendChild(r));
+}
+
+function updateCount(){
+  const n=document.getElementById('medBody').rows.length;
+  document.getElementById('medCount').textContent=n+' medication'+(n===1?'':'s');
+}
+
+// ── REVIEW ──
+function getTableData(){
+  const rows=[];
+  document.getElementById('medBody').querySelectorAll('tr').forEach((tr,i)=>{
+    const inputs=tr.querySelectorAll('input[type=text]');
+    const name=inputs[0]?.value.trim()||'';
+    if(!name)return;
+    rows.push({rowIndex:i,name,dose:inputs[1]?.value.trim()||'',frequency:inputs[2]?.value.trim()||'',route:inputs[3]?.value.trim()||'',notes:inputs[4]?.value.trim()||''});
+  });
+  return rows;
+}
+
+async function runReview(){
+  const key=getKey();
+  if(!key){alert('Please enter your API key first.');return;}
+  const rows=getTableData();
+  if(!rows.length){alert('No medications to review.');return;}
+  setBusy('rev',true);closeReview();
+  try{
+    const prompt=`You are a clinical pharmacist reviewing a medication list for accuracy. Check each entry for: misspelled drug names, incorrect dose formats, unclear frequency, missing route, or obvious data entry errors. Do NOT flag stylistic preferences — only flag clear mistakes.\n\nMedications:\n${JSON.stringify(rows,null,2)}\n\nReturn ONLY a valid JSON object, no markdown, no backticks:\n{"clean":true,"suggestions":[{"rowIndex":0,"field":"name","original":"original text","corrected":"corrected text","reason":"brief reason"}]}\nIf no issues found return: {"clean":true,"suggestions":[]}`;
+    const data=await callAPI([{type:'text',text:prompt}],2000,false);
+    const raw=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    const result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    suggestions=result.suggestions||[];
+    renderReview(result.clean,suggestions,rows);
+    setBusy('rev',false);
+  }catch(e){setBusy('rev',false);alert('Review error:\n'+e.message);}
+}
+
+function renderReview(clean,sugs,rows){
+  const panel=document.getElementById('reviewPanel');
+  const content=document.getElementById('reviewContent');
+  const footer=document.getElementById('reviewFooter');
+  panel.style.display='block';
+  document.querySelectorAll('#medBody tr').forEach(r=>r.classList.remove('flagged'));
+  if(clean||!sugs.length){
+    content.innerHTML='<div class="review-clean">✅ All medications look correct — no issues found.</div>';
+    footer.style.display='none';panel.scrollIntoView({behavior:'smooth',block:'nearest'});return;
+  }
+  sugs.forEach(s=>{const tr=document.getElementById('medBody').rows[s.rowIndex];if(tr)tr.classList.add('flagged');});
+  content.innerHTML=sugs.map((s,i)=>`
+    <div class="suggestion-item" id="sug-${i}">
+      <div class="sug-icon">⚠️</div>
+      <div class="sug-content">
+        <div class="sug-field">${s.field} — Row ${s.rowIndex+1}: ${rows.find(r=>r.rowIndex===s.rowIndex)?.name||''}</div>
+        <div class="sug-diff"><span class="sug-old">${s.original}</span><span class="sug-arrow">→</span><span class="sug-new">${s.corrected}</span></div>
+        <div class="sug-reason">${s.reason}</div>
+        <div class="sug-actions no-print">
+          <button class="btn btn-teal btn-sm" onclick="acceptSuggestion(${i})">✓ Accept</button>
+          <button class="btn btn-sm" style="background:#f0f0f0;color:var(--muted)" onclick="dismissSuggestion(${i})">Dismiss</button>
+        </div>
+      </div>
+    </div>`).join('');
+  footer.style.display='flex';panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function acceptSuggestion(i){
+  const s=suggestions[i];if(!s)return;
+  const tr=document.getElementById('medBody').rows[s.rowIndex];if(!tr)return;
+  const inputs=tr.querySelectorAll('input[type=text]');
+  const fieldMap={name:0,dose:1,frequency:2,route:3,notes:4};
+  const idx=fieldMap[s.field];
+  if(idx!==undefined&&inputs[idx]) inputs[idx].value=s.field==='name'?cap(s.corrected):s.corrected;
+  if(s.field==='frequency')updatePRN(tr);
+  tr.classList.remove('flagged');
+  const el=document.getElementById('sug-'+i);el.style.opacity='.4';el.style.pointerEvents='none';
+  suggestions[i]=null;
+  if(suggestions.every(x=>!x))closeReview();
+}
+function acceptAll(){suggestions.forEach((_,i)=>{if(suggestions[i])acceptSuggestion(i);});}
+function dismissSuggestion(i){
+  const s=suggestions[i];if(!s)return;
+  const tr=document.getElementById('medBody').rows[s.rowIndex];
+  if(tr)tr.classList.remove('flagged');
+  const el=document.getElementById('sug-'+i);el.style.opacity='.4';el.style.pointerEvents='none';
+  suggestions[i]=null;if(suggestions.every(x=>!x))closeReview();
+}
+function closeReview(){
+  document.getElementById('reviewPanel').style.display='none';
+  document.querySelectorAll('#medBody tr').forEach(r=>r.classList.remove('flagged'));
+}
+
+// ── PRINT (landscape, full-page table, 10 meds per page) ──
+const PER_PAGE=10; // medications per printed page
+
+function printLandscape(){
+  // Collect named rows from the editor
+  const data=[...document.getElementById('medBody').rows].map(tr=>{
+    const t=tr.querySelectorAll('input[type=text]');
+    const c=tr.querySelectorAll('input[type=checkbox]');
+    return {
+      name:cap((t[0]?.value||'').trim()),
+      dose:(t[1]?.value||'').trim(),
+      freq:(t[2]?.value||'').trim(),
+      route:(t[3]?.value||'').trim(),
+      notes:(t[4]?.value||'').trim(),
+      am:!!c[0]?.checked, noon:!!c[1]?.checked, pm:!!c[2]?.checked, bed:!!c[3]?.checked,
+      prn:tr.classList.contains('prn-row')
+    };
+  }).filter(r=>r.name);
+
+  // Pad to complete pages of PER_PAGE so every sheet is a full form
+  const pageCount=Math.max(1,Math.ceil(data.length/PER_PAGE));
+  const padded=data.slice();
+  while(padded.length<pageCount*PER_PAGE) padded.push(null);
+
+  const colgroup=`<colgroup><col class="med"><col class="dose"><col class="freq"><col class="route"><col class="chk"><col class="chk"><col class="chk"><col class="chk"><col class="notes"></colgroup>`;
+  const thead=`<thead><tr><th>Medication</th><th>Dose</th><th>Frequency</th><th>Route</th><th class="c">AM</th><th class="c">Noon</th><th class="c">PM</th><th class="c">Bedtime</th><th>Notes</th></tr></thead>`;
+  const blankRow=`<tr class="blank"><td></td><td></td><td></td><td></td><td class="c"></td><td class="c"></td><td class="c"></td><td class="c"></td><td></td></tr>`;
+
+  let pages='';
+  for(let p=0;p<pageCount;p++){
+    const body=padded.slice(p*PER_PAGE,(p+1)*PER_PAGE).map(r=>{
+      if(!r) return blankRow;
+      return `<tr${r.prn?' class="prn"':''}>`+
+        `<td class="name"><strong>${esc(r.name)}</strong>${r.prn?' <span class="prn-badge">PRN</span>':''}</td>`+
+        `<td>${esc(r.dose)}</td><td>${esc(r.freq)}</td><td>${esc(r.route)}</td>`+
+        `<td class="c">${r.am?'✔':''}</td><td class="c">${r.noon?'✔':''}</td>`+
+        `<td class="c">${r.pm?'✔':''}</td><td class="c">${r.bed?'✔':''}</td>`+
+        `<td>${esc(r.notes)}</td></tr>`;
+    }).join('');
+    const label=pageCount>1?`<span class="pg">Page ${p+1} of ${pageCount}</span>`:'';
+    pages+=`<section class="page">
+      <div class="phead"><h2>💊 Medications — JASA</h2>${label}</div>
+      <table>${colgroup}${thead}<tbody>${body}</tbody></table>
+      <div class="logo-footer">JASA</div>
+    </section>`;
+  }
+
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Medications</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{font-family:Arial,Helvetica,sans-serif;color:#1a2e44}
+@page{size:279mm 215mm;margin:0}
+.page{width:279mm;height:215mm;padding:11mm 11mm 16mm 11mm;display:flex;flex-direction:column;position:relative;overflow:hidden;page-break-after:always;break-after:page}
+.page:last-child{page-break-after:auto;break-after:auto}
+.phead{flex:0 0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;border-bottom:3px solid #1a2e44;padding-bottom:5px;margin-bottom:8px}
+h2{font-size:20px;font-weight:bold}
+.pg{font-size:12px;color:#6b7e93;font-weight:bold;white-space:nowrap}
+table{flex:1 1 auto;width:100%;height:100%;border-collapse:collapse;table-layout:fixed}
+col.med{width:21%}col.dose{width:10%}col.freq{width:15%}col.route{width:9%}col.chk{width:6%}col.notes{width:21%}
+thead th{background:#1a2e44;color:#fff;padding:9px;text-align:left;font-size:13px;text-transform:uppercase;letter-spacing:.03em;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+thead th.c{text-align:center}
+tbody tr{border-bottom:1px solid #c2ccd6;page-break-inside:avoid;break-inside:avoid}
+tbody tr.prn{background:#fff6e8;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+td{padding:7px 9px;vertical-align:middle;overflow:hidden;word-break:break-word;line-height:1.25;font-size:18px}
+td.c{text-align:center}
+td.name strong{font-weight:bold}
+.prn-badge{background:#e87225;color:#fff;font-size:12px;font-weight:bold;padding:2px 7px;border-radius:8px;margin-left:5px;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.logo-footer{position:absolute;bottom:6mm;right:11mm;font-size:20px;font-weight:900;color:#1a2e44;letter-spacing:3px}
+</style></head><body>
+${pages}
+<script>window.onload=function(){setTimeout(function(){window.print();},400);window.onafterprint=function(){window.close();};};<\/script>
+</body></html>`;
+
+  const blob=new Blob([html],{type:'text/html'});
+  const url=URL.createObjectURL(blob);
+  const w=window.open(url,'_blank');
+  if(!w) alert('Please allow pop-ups for this site to print or save the PDF.');
+  setTimeout(()=>URL.revokeObjectURL(url),15000);
+}
+
+function setBusy(which,on){
+  if(which==='ext'){
+    document.getElementById('extractBtn').disabled=on;
+    document.getElementById('extSpinner').style.display=on?'inline-block':'none';
+    document.getElementById('extText').textContent=on?'Extracting…':'Extract Medications with AI';
+  } else {
+    document.getElementById('reviewBtn').disabled=on;
+    document.getElementById('revSpinner').style.display=on?'inline-block':'none';
+    document.getElementById('revText').textContent=on?'Reviewing…':'🔍 Review with AI';
+  }
+}
+
+addRow(null);
+</script>
+</body>
+</html>
